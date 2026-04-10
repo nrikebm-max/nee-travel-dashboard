@@ -1251,24 +1251,32 @@ body {
 
 .hook-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px;
-  display: flex; flex-direction: column; gap: 10px; position: relative;
-  transition: transform .2s;
+  border-radius: var(--radius); padding: 22px;
+  display: flex; flex-direction: column; gap: 14px; position: relative;
+  transition: transform .2s, border-color .2s;
+  overflow: hidden;
 }
-.hook-card:hover { transform: translateY(-2px); }
+.hook-card:hover { transform: translateY(-3px); border-color: var(--primary); }
 .hook-card.hot {
   border-color: rgba(245,158,11,.4);
-  background: linear-gradient(135deg, var(--surface), rgba(245,158,11,.06));
+  background: linear-gradient(135deg, var(--surface), rgba(245,158,11,.04));
 }
 .hook-badge {
-  position: absolute; top: 12px; right: 12px;
-  font-size: .7rem; font-weight: 700; padding: 3px 8px;
-  border-radius: 10px; background: rgba(245,158,11,.2); color: var(--orange);
+  position: absolute; top: 14px; right: 14px;
+  font-size: .68rem; font-weight: 800; padding: 4px 10px;
+  border-radius: 20px; background: rgba(245,158,11,.15); color: var(--orange);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  z-index: 5;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(245,158,11,0.2);
 }
-.hook-text { font-weight: 600; font-size: .88rem; color: var(--text); line-height: 1.5; }
-.hook-why { font-size: .78rem; color: var(--text2); line-height: 1.5; font-style: italic; }
-.hook-metrics { display: flex; gap: 12px; flex-wrap: wrap; }
-.hook-metrics span { font-size: .76rem; color: var(--text2); font-weight: 600; }
+.hook-text { 
+  font-weight: 700; font-size: 1rem; color: var(--text); line-height: 1.5; 
+  padding-right: 90px; /* Safety area to prevent overlap with badge */
+}
+.hook-why { font-size: .82rem; color: var(--text2); line-height: 1.5; font-style: italic; border-left: 2px solid var(--border); padding-left: 12px; }
+.hook-metrics { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 4px; }
+.hook-metrics span { font-size: .78rem; color: var(--cyan); font-weight: 700; display: flex; align-items: center; gap: 5px; }
 
 /* === CLIENT PROFILE ======================================== */
 .profile-hero {
