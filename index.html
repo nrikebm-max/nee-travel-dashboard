@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEE Travel Intelligence | Dashboard Estratégico LATAM → Europa</title>
+  <meta name="description" content="Dashboard de inteligencia de mercado para agencias de viajes. Analiza competencia, tendencias, contenido viral y oportunidades estratégicas en el segmento LATAM hacia Europa." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- ============================================================
+       LOGIN OVERLAY
+  ============================================================ -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-box">
+      <div class="login-logo">✈</div>
+      <h2>Acceso Restringido</h2>
+      <p>Ingresa la contraseña para acceder al Dashboard de Inteligencia</p>
+      <div class="login-form">
+        <input type="password" id="loginPass" placeholder="Contraseña" autofocus />
+        <button id="loginBtn">Entrar →</button>
+        <p id="loginError" class="login-error" style="display:none">Contraseña incorrecta</p>
+      </div>
+      <div class="login-hint">Pista: nee_travel</div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SIDEBAR
+  ============================================================ -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">✈</div>
+      <div class="logo-text">
+        <span class="logo-title">NEE Travel</span>
+        <span class="logo-sub">Intelligence v2.0</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- PERFIL -->
+      <div class="nav-group">
+        <div class="nav-group-label">Mi Espacio</div>
+        <a href="#" class="nav-item" data-section="my-profile" id="nav-my-profile">
+          <span class="nav-icon">🧑‍💻</span><span>Mi Perfil</span>
+        </a>
+      </div>
+
+      <!-- GENERAL -->
+      <div class="nav-group">
+        <div class="nav-group-label">Menú General</div>
+        <a href="#" class="nav-item active" data-section="overview" id="nav-overview">
+          <span class="nav-icon">🌍</span><span>Visión Global</span>
+        </a>
+        <a href="#" class="nav-item" data-section="travel-vision" id="nav-travel-vision">
+          <span class="nav-icon">✈️</span><span>Visión Viajes</span>
+        </a>
+        <a href="#" class="nav-item" data-section="trends" id="nav-trends">
+          <span class="nav-icon">📈</span><span>Tendencias</span>
+        </a>
+        <a href="#" class="nav-item" data-section="content" id="nav-content">
+          <span class="nav-icon">🎯</span><span>Contenido Viral</span>
+        </a>
+        <a href="#" class="nav-item" data-section="hashtags" id="nav-hashtags">
+          <span class="nav-icon">🔖</span><span>Hashtags</span>
+        </a>
+        <a href="#" class="nav-item" data-section="demand" id="nav-demand">
+          <span class="nav-icon">🗺️</span><span>Mapa de Demanda</span>
+        </a>
+      </div>
+
+      <!-- NICHO -->
+      <div class="nav-group">
+        <div class="nav-group-label">Menú Nicho · LATAM→EU</div>
+        <a href="#" class="nav-item" data-section="competitors" id="nav-competitors">
+          <span class="nav-icon">🥇</span><span>Competidores</span>
+        </a>
+        <a href="#" class="nav-item" data-section="strategies" id="nav-strategies">
+          <span class="nav-icon">💡</span><span>Estrategias</span>
+        </a>
+        <a href="#" class="nav-item" data-section="niche-hashtags" id="nav-niche-hashtags">
+          <span class="nav-icon">#</span><span>Hashtags Nicho</span>
+        </a>
+        <a href="#" class="nav-item" data-section="hooks" id="nav-hooks">
+          <span class="nav-icon">🎣</span><span>Ganchos & Hooks</span>
+        </a>
+        <a href="#" class="nav-item" data-section="client-profile" id="nav-client-profile">
+          <span class="nav-icon">👤</span><span>Perfil del Cliente</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="update-badge">
+        <span class="pulse-dot"></span>
+        <span id="sidebar-date">Datos · Mar 2026</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT
+  ============================================================ -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="breadcrumb" id="breadcrumb">Visión Global del Mercado</div>
+      </div>
+      <div class="topbar-right">
+        <div class="kpi-pill">
+          <span class="kpi-label">Mercado</span>
+          <span class="kpi-value">LATAM → Europa</span>
+        </div>
+        <div class="kpi-pill source-badge" id="activeSourceBadge">
+          <span class="kpi-label">Fuente:</span>
+          <span class="kpi-value">TikTok (RapidAPI)</span>
+        </div>
+        <div class="kpi-pill">
+          <span class="kpi-label">Ref.</span>
+          <span class="kpi-value" id="topbar-period">Mar 2026</span>
+        </div>
+        <button class="update-btn" id="updateDataBtn">
+          <span class="update-btn-icon" id="updateIcon">🔄</span>
+          <span id="updateText">Actualizar datos</span>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- SECTIONS CONTAINER -->
+    <div class="sections-container">
+
+      <!-- ===================================================
+           SECTION: MI PERFIL
+      =================================================== -->
+      <section id="section-my-profile" class="section">
+        <div class="section-header">
+          <h1>🧑‍💻 Inteligencia de Perfil Propio</h1>
+          <p class="section-desc">Analiza tu huella digital y compárala con el benchmark del sector industrial</p>
+        </div>
+
+        <!-- Profile Form & Global Source -->
+        <div class="profile-main-grid">
+          <div class="profile-config-card">
+            <h3>Configuración de Inteligencia</h3>
+            <div class="form-group">
+              <label for="profileName">Perfil o @Handle</label>
+              <input type="text" id="profileName" class="form-input" placeholder="Ej. @nee_travel_italy" />
+            </div>
+            <div class="form-group">
+              <label>Fuente de Datos (Puertas de Enlace)</label>
+              <div class="source-selector-vertical">
+                <label class="src-opt">
+                  <input type="radio" name="intelligence-source" value="rapidapi" checked />
+                  <span class="src-pill">
+                    <span class="src-icon">⚡</span>
+                    <div class="src-text">
+                      <strong>TikTok Real-Time</strong>
+                      <span>RapidAPI Core</span>
+                    </div>
+                  </span>
+                </label>
+                <label class="src-opt">
+                  <input type="radio" name="intelligence-source" value="trends" />
+                  <span class="src-pill">
+                    <span class="src-icon">📈</span>
+                    <div class="src-text">
+                      <strong>Google Trends</strong>
+                      <span>Search Intelligence</span>
+                    </div>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="rapidApiKey">RapidAPI Key (X-RapidAPI-Key)</label>
+              <div class="input-with-icon">
+                <span class="input-icon">🔑</span>
+                <input type="password" id="rapidApiKey" class="form-input" placeholder="Tu clave de acceso..." />
+              </div>
+            </div>
+            <button class="btn-primary-big" id="loadProfileBtn">
+              Sincronizar Inteligencia de Perfil →
+            </button>
+          </div>
+
+          <div class="profile-results-container" id="profileResults" style="display:none">
+            <div class="profile-card-header">
+              <div class="profile-header-main">
+                <div class="profile-avatar-xl">🧳</div>
+                <div class="profile-id-info">
+                  <h2 id="profileHandle">@nee_travel_italy</h2>
+                  <p class="profile-bio">Analizando...</p>
+                  <div class="profile-score-badge">
+                    <span class="score-label">Health Score</span>
+                    <span class="score-value">84/100</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-mini-grid">
+              <div class="kpi-mini-card">
+                <span class="kpi-mini-val" id="p-followers">--</span>
+                <span class="kpi-mini-lbl">Seguidores</span>
+              </div>
+              <div class="kpi-mini-card">
+                <span class="kpi-mini-val" id="p-engagement">--</span>
+                <span class="kpi-mini-lbl">Engagement</span>
+              </div>
+              <div class="kpi-mini-card">
+                <span class="kpi-mini-val" id="p-growth">--</span>
+                <span class="kpi-mini-lbl">Contenido</span>
+              </div>
+              <div class="kpi-mini-card">
+                <span class="kpi-mini-val" id="p-frequency">--</span>
+                <span class="kpi-mini-lbl">Likes</span>
+              </div>
+            </div>
+
+            <!-- Deep Metrics -->
+            <div class="deep-metrics-grid">
+              <div class="metric-box">
+                <div class="m-label">Performance vs Nicho</div>
+                <div class="m-meter">
+                  <div class="m-bar" style="width: 78%"></div>
+                </div>
+                <div class="m-msg">Superior al 78% de agencias</div>
+              </div>
+              <div class="metric-box">
+                <div class="m-label">Sentimiento de Comentarios</div>
+                <div class="m-meter">
+                  <div class="m-bar pos" style="width: 92%"></div>
+                </div>
+                <div class="m-msg">92% de reseñas positivas</div>
+              </div>
+            </div>
+
+            <div class="charts-row">
+              <div class="chart-card">
+                <div class="chart-header"><h3>Crecimiento Local</h3></div>
+                <canvas id="profileGrowthChart" height="180"></canvas>
+              </div>
+              <div class="chart-card">
+                <div class="chart-header"><h3>Benchmarking</h3></div>
+                <canvas id="profileCompChart" height="180"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: VISION GLOBAL
+      =================================================== -->
+      <section id="section-overview" class="section active">
+        <div class="section-header">
+          <h1>🌍 Visión Global — Todos los Rubros</h1>
+          <p class="section-desc">¿Qué rubros están creciendo globalmente? ¿Dónde conviene atacar? · Datos: Mar 2026 vs Mar 2025</p>
+        </div>
+
+        <!-- Global KPIs -->
+        <div class="kpi-grid" id="kpi-overview">
+          <div class="kpi-card">
+            <div class="kpi-card-icon">✈️</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">+18%</div>
+              <div class="kpi-card-label">Crecimiento Viajes LATAM→EU</div>
+            </div>
+            <div class="kpi-card-trend up">▲ vs Mar 2025</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-icon">🔍</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">4.8M</div>
+              <div class="kpi-card-label">Búsquedas/mes "viajes a Europa"</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +26% YoY</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-icon">📱</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">71%</div>
+              <div class="kpi-card-label">Decisiones via redes sociales</div>
+            </div>
+            <div class="kpi-card-trend up">▲ vs 67% (2025)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-icon">🚀</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">TikTok</div>
+              <div class="kpi-card-label">Canal de mayor crecimiento</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +41% engagement</div>
+          </div>
+        </div>
+
+        <!-- Global Donuts Row -->
+        <h2 class="subsection-title">Distribución por Rubro · Global</h2>
+        <div class="charts-row three-col">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>🌐 Todos los Rubros</h3>
+              <span class="chart-badge">Global · Mar 2026</span>
+            </div>
+            <canvas id="globalDonutAll" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">💡</span>
+              <span><strong>¿Qué me dice?</strong> Viajes domina en intención de compra digital. Tecnología lidera en volumen de conversación, pero viajes tiene el mayor ticket promedio.</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>🎵 TikTok por Rubro</h3>
+              <span class="chart-badge">Distribución Mar 2026</span>
+            </div>
+            <canvas id="globalDonutTikTok" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🎯</span>
+              <span><strong>Decisión:</strong> Viajes tiene 3.1x más engagement en TikTok que en otras plataformas. Es el canal prioritario para captación.</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>📸 Instagram por Rubro</h3>
+              <span class="chart-badge">Distribución Mar 2026</span>
+            </div>
+            <canvas id="globalDonutInstagram" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">⚡</span>
+              <span><strong>Oportunidad:</strong> Viajes en Instagram tiene menor competencia relativa que en TikTok. Ideal para contenido de alta calidad visual.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Cross Comparison -->
+        <div class="cross-comparison-card">
+          <div class="cross-header">
+            <h2>🔀 Cruce Clave: Rubro Global vs. Por Red Social</h2>
+            <p class="cross-desc">Detecta dónde conviene atacar — compara el % global de cada rubro vs. su presencia en cada plataforma</p>
+          </div>
+          <div class="cross-chart-area">
+            <canvas id="crossComparisonChart" height="100"></canvas>
+          </div>
+          <div class="chart-insight cross-insight">
+            <span class="insight-icon-sm">🔥</span>
+            <span><strong>Insight clave:</strong> El rubro Viajes representa el 19% global pero el 28% en TikTok — está <strong>subrepresentado en Instagram</strong> (14%) vs. su potencial real. Hay una brecha de oportunidad en IG que tus competidores no están aprovechando.</span>
+          </div>
+        </div>
+
+        <!-- Evolution chart -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Evolución Digital 2024–2026</h3>
+            </div>
+            <canvas id="rubroEvolutionChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Motivaciones del Viajero</h3>
+            </div>
+            <canvas id="motivationsChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Auto Insights -->
+        <h2 class="subsection-title">💬 Insights Automáticos del Sistema</h2>
+        <div class="auto-insights-grid">
+          <div class="auto-insight fire">
+            <div class="ai-icon">🔥</div>
+            <div class="ai-text">
+              <div class="ai-title">Viajes crece más en TikTok que en Instagram</div>
+              <div class="ai-desc">El engagement del sector viajes en TikTok (+41% YoY) supera 2.8x al de Instagram (+15%). Si buscas alcance masivo y viralidad, TikTok es tu prioridad #1.</div>
+              <div class="ai-action">👉 Publica al menos 5 videos/semana en TikTok</div>
+            </div>
+          </div>
+          <div class="auto-insight info">
+            <div class="ai-icon">📊</div>
+            <div class="ai-text">
+              <div class="ai-title">Tecnología domina en Instagram pero pierde terreno en TikTok</div>
+              <div class="ai-desc">El rubro tecnología tiene 31% de presencia en IG pero solo 12% en TikTok. Viajes ocupa el espacio que tech no captura en la plataforma joven.</div>
+              <div class="ai-action">👉 El nicho viajes en TikTok tiene menos competencia indirecta</div>
+            </div>
+          </div>
+          <div class="auto-insight warning">
+            <div class="ai-icon">⚠️</div>
+            <div class="ai-text">
+              <div class="ai-title">Brecha oportunidad: Viajes subestimado en Instagram</div>
+              <div class="ai-desc">Viajes representa solo 14% de la conversación en IG vs. 19% global. Los competidores están enfocados en TikTok, dejando Instagram menos saturado en este nicho.</div>
+              <div class="ai-action">👉 Instagram Reels puede ser tu canal de diferenciación con menor saturación</div>
+            </div>
+          </div>
+          <div class="auto-insight success">
+            <div class="ai-icon">🚀</div>
+            <div class="ai-text">
+              <div class="ai-title">Mar 2026: momento óptimo de captación pre-temporada alta</div>
+              <div class="ai-desc">Los viajeros LATAM empiezan a planificar viajes de verano europeo (Jun–Ago) con 3–4 meses de anticipación. Marzo es el mes pico de intención de búsqueda.</div>
+              <div class="ai-action">👉 Lanza campañas de Early Bird y contenido de "¿Por qué ir este verano?"</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: VISION VIAJES
+      =================================================== -->
+      <section id="section-travel-vision" class="section">
+        <div class="section-header">
+          <h1>✈️ Visión Viajes — Deep Dive Sector Turismo</h1>
+          <p class="section-desc">Análisis específico del rubro viajes en todas las plataformas y segmentos · Mar 2026</p>
+        </div>
+
+        <!-- Travel KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card accent-blue">
+            <div class="kpi-card-icon">🌍</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">23.4%</div>
+              <div class="kpi-card-label">Share of voice viajes global</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +4.1pts vs 2025</div>
+          </div>
+          <div class="kpi-card accent-purple">
+            <div class="kpi-card-icon">📱</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">9.8%</div>
+              <div class="kpi-card-label">Avg. engagement viajes TikTok</div>
+            </div>
+            <div class="kpi-card-trend up">▲ Sector #1</div>
+          </div>
+          <div class="kpi-card accent-orange">
+            <div class="kpi-card-icon">💰</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">$4,100</div>
+              <div class="kpi-card-label">Ticket promedio LATAM→Europa</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +$300 vs 2025</div>
+          </div>
+          <div class="kpi-card accent-green">
+            <div class="kpi-card-icon">📈</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">+31%</div>
+              <div class="kpi-card-label">Crecimiento búsquedas YoY</div>
+            </div>
+            <div class="kpi-card-trend up">▲ Aceleración</div>
+          </div>
+        </div>
+
+        <!-- Travel Donuts Row -->
+        <h2 class="subsection-title">Viajes por Subsegmento & Plataforma</h2>
+        <div class="charts-row three-col">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>🧳 Subsegmentos de Viajes</h3>
+              <span class="chart-badge">Global</span>
+            </div>
+            <canvas id="travelSubsegDonut" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">💡</span>
+              <span>LATAM→Europa representa el subsegmento de mayor crecimiento relativo. Los viajes de aventura y gastronómicos son los de mayor intención de compra.</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>🎵 Viajes en TikTok</h3>
+              <span class="chart-badge">Subsegmentos</span>
+            </div>
+            <canvas id="travelTikTokDonut" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🎯</span>
+              <span>El contenido interrail y eurotrip domina TikTok. El segmento agencia/paquetes tiene <strong>baja competencia</strong> y alto engagement — tu oportunidad directa.</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>📸 Viajes en Instagram</h3>
+              <span class="chart-badge">Subsegmentos</span>
+            </div>
+            <canvas id="travelInstagramDonut" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">⚡</span>
+              <span>Lifestyle y lujo dominan Instagram. El segmento "paquetes accesibles" está <strong>desatendido en IG</strong>. Primera en posicionarse capturará la demanda latente.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platform cross for Travel -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Cruce Subsegmentos Digitales</h3>
+            </div>
+            <canvas id="travelCrossChart" height="180"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Evolución por Plataforma</h3>
+            </div>
+            <canvas id="travelEvolutionChart" height="180"></canvas>
+          </div>
+        </div>
+
+        <!-- Travel Insights -->
+        <h2 class="subsection-title">💬 Insights del Sector Viajes</h2>
+        <div class="auto-insights-grid">
+          <div class="auto-insight fire">
+            <div class="ai-icon">🏆</div>
+            <div class="ai-text">
+              <div class="ai-title">LATAM→Europa: el corredor de mayor crecimiento de la región</div>
+              <div class="ai-desc">El corredor LATAM→Europa creció +31% en búsquedas vs. año anterior. Colombia lidera (+44%), seguida de México (+28%) y Argentina (+22%).</div>
+              <div class="ai-action">👉 Personaliza contenido por país de origen para triplicar relevancia</div>
+            </div>
+          </div>
+          <div class="auto-insight info">
+            <div class="ai-icon">📅</div>
+            <div class="ai-text">
+              <div class="ai-title">Ciclo de decisión: el cliente planifica 5–7 meses antes</div>
+              <div class="ai-desc">Para verano 2026 (Jun–Ago), el pico de intención está en Marzo–Abril. Los que publican contenido ahora captan clientes que comprarán en mayo.</div>
+              <div class="ai-action">👉 Tu contenido de hoy = tus ventas de mayo-junio</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: TRENDS
+      =================================================== -->
+      <section id="section-trends" class="section">
+        <div class="section-header">
+          <h1>📈 Tendencias · Solo Viajes LATAM→Europa</h1>
+          <p class="section-desc">Destinos en auge, estacionalidad y ranking comparativo · Mar 2026 vs. Mar 2025</p>
+        </div>
+
+        <!-- Top KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card accent-blue">
+            <div class="kpi-card-icon">🏛️</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">#1 Italia</div>
+              <div class="kpi-card-label">Destino más buscado LATAM</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +31% YoY</div>
+          </div>
+          <div class="kpi-card accent-purple">
+            <div class="kpi-card-icon">🌟</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">Albania</div>
+              <div class="kpi-card-label">Destino emergente #1</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +156% YoY</div>
+          </div>
+          <div class="kpi-card accent-orange">
+            <div class="kpi-card-icon">🗓️</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">Jun–Ago</div>
+              <div class="kpi-card-label">Temporada alta principal</div>
+            </div>
+            <div class="kpi-card-trend up">▲ 100% índice</div>
+          </div>
+          <div class="kpi-card accent-green">
+            <div class="kpi-card-icon">🆕</div>
+            <div class="kpi-card-data">
+              <div class="kpi-card-value">Oct–Nov</div>
+              <div class="kpi-card-label">Nueva temporada emergente</div>
+            </div>
+            <div class="kpi-card-trend up">▲ +38% vs 2024</div>
+          </div>
+        </div>
+
+        <!-- Ranking Table -->
+        <h2 class="subsection-title">🏅 Ranking de Destinos — Análisis Comparativo</h2>
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table ranking-table" id="destinationsRankingTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Destino</th>
+                  <th>Vol. Mar 2026</th>
+                  <th>Vol. Mar 2025</th>
+                  <th>Diferencia</th>
+                  <th>% Crecimiento</th>
+                  <th>Tendencia</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="rank-badge gold">1</span></td>
+                  <td><strong>🇮🇹 Italia</strong></td>
+                  <td>1.48M</td><td>1.13M</td>
+                  <td class="diff-up">+350K</td>
+                  <td class="pct-up">+31%</td>
+                  <td><span class="trend-spark up">▲▲▲</span></td>
+                  <td><span class="status-badge consolidated">Consolidado</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge silver">2</span></td>
+                  <td><strong>🇫🇷 Francia</strong></td>
+                  <td>1.15M</td><td>0.97M</td>
+                  <td class="diff-up">+180K</td>
+                  <td class="pct-up">+19%</td>
+                  <td><span class="trend-spark up">▲▲</span></td>
+                  <td><span class="status-badge consolidated">Consolidado</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge bronze">3</span></td>
+                  <td><strong>🇪🇸 España</strong></td>
+                  <td>1.01M</td><td>0.88M</td>
+                  <td class="diff-up">+130K</td>
+                  <td class="pct-up">+15%</td>
+                  <td><span class="trend-spark up">▲▲</span></td>
+                  <td><span class="status-badge consolidated">Consolidado</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">4</span></td>
+                  <td><strong>🇬🇷 Grecia</strong></td>
+                  <td>770K</td><td>461K</td>
+                  <td class="diff-up">+309K</td>
+                  <td class="pct-up">+67%</td>
+                  <td><span class="trend-spark fire">🔥🔥</span></td>
+                  <td><span class="status-badge rising">En Auge</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">5</span></td>
+                  <td><strong>🇵🇹 Portugal</strong></td>
+                  <td>700K</td><td>583K</td>
+                  <td class="diff-up">+117K</td>
+                  <td class="pct-up">+20%</td>
+                  <td><span class="trend-spark up">▲▲</span></td>
+                  <td><span class="status-badge growing">Creciendo</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">6</span></td>
+                  <td><strong>🇩🇪 Alemania</strong></td>
+                  <td>540K</td><td>491K</td>
+                  <td class="diff-up">+49K</td>
+                  <td class="pct-up">+10%</td>
+                  <td><span class="trend-spark neutral">→</span></td>
+                  <td><span class="status-badge stable">Estable</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">7</span></td>
+                  <td><strong>🇦🇱 Albania</strong></td>
+                  <td>320K</td><td>125K</td>
+                  <td class="diff-up">+195K</td>
+                  <td class="pct-up">+156%</td>
+                  <td><span class="trend-spark fire">🔥🔥🔥</span></td>
+                  <td><span class="status-badge emerging">Emergente</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">8</span></td>
+                  <td><strong>🇸🇮 Eslovenia</strong></td>
+                  <td>218K</td><td>124K</td>
+                  <td class="diff-up">+94K</td>
+                  <td class="pct-up">+76%</td>
+                  <td><span class="trend-spark fire">🔥🔥</span></td>
+                  <td><span class="status-badge emerging">Emergente</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">9</span></td>
+                  <td><strong>🇲🇪 Montenegro</strong></td>
+                  <td>196K</td><td>99K</td>
+                  <td class="diff-up">+97K</td>
+                  <td class="pct-up">+98%</td>
+                  <td><span class="trend-spark fire">🔥🔥</span></td>
+                  <td><span class="status-badge emerging">Emergente</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">10</span></td>
+                  <td><strong>🇮🇸 Islandia</strong></td>
+                  <td>162K</td><td>105K</td>
+                  <td class="diff-up">+57K</td>
+                  <td class="pct-up">+54%</td>
+                  <td><span class="trend-spark up">▲▲</span></td>
+                  <td><span class="status-badge rising">En Auge</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Top Destinos Europa Buscados (LATAM)</h3>
+              <span class="chart-badge">Mar 2026 vs 2025</span>
+            </div>
+            <canvas id="destinationsChart" height="240"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Estacionalidad de la Demanda</h3>
+              <span class="chart-badge">Índice mensual</span>
+            </div>
+            <canvas id="seasonalityChart" height="240"></canvas>
+          </div>
+        </div>
+
+        <!-- Enriquecidos -->
+        <h2 class="subsection-title">Status Detallado por Categoría</h2>
+        <div class="trends-grid three-col">
+          <div class="trend-card rising">
+            <div class="trend-badge">🚀 En Auge</div>
+            <div class="trend-category">Destinos con crecimiento acelerado</div>
+            <ul class="trend-list">
+              <li><span class="trend-tag">Albania</span><span class="trend-stat">+156% · 320K búsq.</span></li>
+              <li><span class="trend-tag">Montenegro</span><span class="trend-stat">+98% · 196K búsq.</span></li>
+              <li><span class="trend-tag">Eslovenia</span><span class="trend-stat">+76% · 218K búsq.</span></li>
+              <li><span class="trend-tag">Grecia Islas</span><span class="trend-stat">+67% · 770K búsq.</span></li>
+              <li><span class="trend-tag">Islandia</span><span class="trend-stat">+54% · 162K búsq.</span></li>
+            </ul>
+            <div class="trend-insight">💡 Menor competencia, mayor ROI de contenido. Primero en publicar captura la demanda.</div>
+          </div>
+          <div class="trend-card stable">
+            <div class="trend-badge">✅ Consolidados</div>
+            <div class="trend-category">Destinos clásicos · Alta demanda sostenida</div>
+            <ul class="trend-list">
+              <li><span class="trend-tag">Roma</span><span class="trend-stat">Siempre top 3 · 890K</span></li>
+              <li><span class="trend-tag">París</span><span class="trend-stat">Estable alto · 720K</span></li>
+              <li><span class="trend-tag">Barcelona</span><span class="trend-stat">Alta demanda · 610K</span></li>
+              <li><span class="trend-tag">Ámsterdam</span><span class="trend-stat">Estable · 440K</span></li>
+              <li><span class="trend-tag">Praga</span><span class="trend-stat">Crecimiento · 380K</span></li>
+            </ul>
+            <div class="trend-insight">💡 Alta competencia pero demanda garantizada. Ideal para paquetes con margen alto.</div>
+          </div>
+          <div class="trend-card experience">
+            <div class="trend-badge">✨ Tendencias 2026</div>
+            <div class="trend-category">Tipos de experiencia más buscadas</div>
+            <ul class="trend-list">
+              <li><span class="trend-tag">Slow Travel</span><span class="trend-stat">+89% YoY</span></li>
+              <li><span class="trend-tag">Gastronomía</span><span class="trend-stat">+74% YoY</span></li>
+              <li><span class="trend-tag">Wellness Spa</span><span class="trend-stat">+66% YoY</span></li>
+              <li><span class="trend-tag">Tour Raíces</span><span class="trend-stat">+61% YoY</span></li>
+              <li><span class="trend-tag">Lujo Accesible</span><span class="trend-stat">+52% YoY</span></li>
+              <li><span class="trend-tag">Interrail</span><span class="trend-stat">+48% YoY</span></li>
+            </ul>
+            <div class="trend-insight">💡 Slow Travel y Gastronomía son los hooks emocionales más efectivos en contenido viral.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: CONTENT VIRAL
+      =================================================== -->
+      <section id="section-content" class="section">
+        <div class="section-header">
+          <h1>🎯 Contenido Viral · Sector Viajes LATAM→Europa</h1>
+          <p class="section-desc">Formatos, anatomía del contenido y plataformas más efectivas para conversión</p>
+        </div>
+
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Formatos con Mayor Engagement</h3>
+              <span class="chart-badge">Sector Viajes · Mar 2026</span>
+            </div>
+            <canvas id="formatsChart" height="220"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">💡</span>
+              <span><strong>¿Qué me dice este gráfico?</strong> Los videos cortos de TikTok (7–15s) generan el mayor engagement. El carrusel de Instagram sigue siendo el rey en conversión a guardado (+saves). <strong>Decisión: combina ambos formatos en tu estrategia semanal.</strong></span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Plataformas más Efectivas · Sector Viajes</h3>
+            </div>
+            <canvas id="platformsChart" height="220"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🎯</span>
+              <span><strong>¿Qué me dice este gráfico?</strong> TikTok lidera en Alcance y Viralidad. Instagram lidera en Conversión y Confianza. YouTube es imbatible en Autoridad. <strong>Estrategia óptima: TikTok para captar, Instagram para convertir, YouTube para fidelizar.</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Anatomy — 12 blocks -->
+        <h2 class="subsection-title">🔬 Anatomía del Contenido que Convierte · 12 Elementos Clave</h2>
+        <div class="strategy-grid twelve-col">
+          <div class="strategy-card">
+            <div class="strategy-number">01</div>
+            <div class="strategy-title">Reels 7–15 segundos</div>
+            <div class="strategy-desc">Clips con transiciones rápidas "antes/después" de destinos. Engagement 4.8x mayor que fotos estáticas. El algoritmo prioriza estos formatos.</div>
+            <div class="strategy-metric">📊 Engagement: <strong>8.3%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">MUY ALTO</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">02</div>
+            <div class="strategy-title">POV Travel Videos</div>
+            <div class="strategy-desc">"POV: Estás en Roma por primera vez" — Narrativa en primera persona que genera identificación inmediata. Tasa de guardado 3x mayor que otros formatos.</div>
+            <div class="strategy-metric">💾 Saves rate: <strong>12.1%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">MUY ALTO</span></div>
+          </div>
+          <div class="strategy-card hot-card">
+            <div class="strategy-number">03</div>
+            <div class="strategy-title">Price Reveal Videos 🔥</div>
+            <div class="strategy-desc">"Cuánto gasté en 10 días en Italia" — Transparencia financiera que genera debate masivo, millones de views y alta confianza. El contenido más compartido del nicho.</div>
+            <div class="strategy-metric">💬 Shares: <strong>+340%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-viral">VIRAL</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">04</div>
+            <div class="strategy-title">Error/Warning Content</div>
+            <div class="strategy-desc">"5 errores que NO debes cometer en Europa" — El FOMO negativo activa altísima retención y te posiciona como experto de autoridad en el nicho.</div>
+            <div class="strategy-metric">👁️ Completion: <strong>91%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">MUY ALTO</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">05</div>
+            <div class="strategy-title">Itinerario Visual Día-a-Día</div>
+            <div class="strategy-desc">Recorridos con clips reales de cada lugar. Facilita la visualización del viaje y reduce la fricción de decisión de compra al mostrar la experiencia completa.</div>
+            <div class="strategy-metric">🛒 Conversión: <strong>+28%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">ALTO</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">06</div>
+            <div class="strategy-title">Testimonios en Video</div>
+            <div class="strategy-desc">Clientes latinoamericanos reales contando su experiencia. UGC (User Generated Content) genera 6.9x más confianza que contenido de marca y convierte en ventas directas.</div>
+            <div class="strategy-metric">🤝 Trust: <strong>+69%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">MUY ALTO</span></div>
+          </div>
+          <div class="strategy-card hot-card">
+            <div class="strategy-number">07</div>
+            <div class="strategy-title">Day-in-Life Local 🔥</div>
+            <div class="strategy-desc">"Un día en mi vida viviendo en Italia organizando viajes para latinos" — Funciona como contenido de marca personal y agencia simultáneamente. Tu ventaja única escalable.</div>
+            <div class="strategy-metric">📈 Reach: <strong>+180%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-viral">VIRAL</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">08</div>
+            <div class="strategy-title">Carrusel Edu-Viaje (IG)</div>
+            <div class="strategy-desc">Formato carrusel en Instagram con guías completas: "Todo lo que necesitas saber para viajar a Italia". Alto guardado y excelente para el algoritmo de recomendación.</div>
+            <div class="strategy-metric">💾 Saves: <strong>+220%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">ALTO</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">09</div>
+            <div class="strategy-title">Comparativa Agencia vs. Solo</div>
+            <div class="strategy-desc">"¿Ir a Europa solo o con agencia? La comparación honesta" — Genera debate, posiciona el valor de la agencia y atrae a indecisos listos para comprar.</div>
+            <div class="strategy-metric">💬 Comentarios: <strong>+410%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-high">ALTO</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">10</div>
+            <div class="strategy-title">Behind the Scenes Agencia</div>
+            <div class="strategy-desc">Mostrar el proceso real de organizar un viaje: itinerarios, negociación con hoteles, preparación de visas. Humaniza la marca y genera confianza radical.</div>
+            <div class="strategy-metric">🔖 Follows: <strong>+89%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-med">MEDIO-ALTO</span></div>
+          </div>
+          <div class="strategy-card">
+            <div class="strategy-number">11</div>
+            <div class="strategy-title">Q&A en Vivo / Stories</div>
+            <div class="strategy-desc">"Pregúntame lo que quieras sobre viajar a Europa" — Genera engagement instantáneo, recoge intenciones de compra y crea contenido de reutilización. Construye comunidad activa.</div>
+            <div class="strategy-metric">📲 DMs: <strong>+5x</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-med">CONVERSIÓN DIRECTA</span></div>
+          </div>
+          <div class="strategy-card hot-card">
+            <div class="strategy-number">12</div>
+            <div class="strategy-title">Secret Spot Local 🔥</div>
+            <div class="strategy-desc">"El lugar secreto en Roma que solo los que viven aquí conocen" — Máximo potencial viral al capitalizar curiosidad + tu ventaja única de estar basado en Italia. Inimitable.</div>
+            <div class="strategy-metric">👁️ Views: <strong>+280%</strong></div>
+            <div class="strategy-impact">🎯 Impacto: <span class="imp-viral">DIFERENCIADOR ÚNICO</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: HASHTAGS
+      =================================================== -->
+      <section id="section-hashtags" class="section">
+        <div class="section-header">
+          <h1># Hashtags — Sistema de Selección Inteligente</h1>
+          <p class="section-desc">Selecciona hashtags de cada nivel, acumúlalos y copia el set listo para tu post</p>
+        </div>
+
+        <!-- Hashtag Picker UI -->
+        <div class="hashtag-picker-bar">
+          <div class="picker-selected" id="pickerSelected">
+            <span class="picker-label">Set seleccionado:</span>
+            <div class="picker-tags" id="pickerTags"><em>Selecciona hashtags abajo →</em></div>
+          </div>
+          <div class="picker-actions">
+            <span class="picker-count"><span id="pickerCount">0</span>/20</span>
+            <button class="btn-copy" id="copyHashtagsBtn" disabled>📋 Copiar Set</button>
+            <button class="btn-clear" id="clearHashtagsBtn">✕ Limpiar</button>
+          </div>
+        </div>
+
+        <div class="hashtag-universe">
+          <!-- Mega -->
+          <div class="hashtag-tier">
+            <div class="tier-label">🔥 Mega (&gt;50M posts) — Alto alcance, alta competencia</div>
+            <div class="hashtag-cloud" id="tier-mega">
+              <span class="hashtag massive selectable" data-tag="#travel" style="--size:2.2rem">#travel</span>
+              <span class="hashtag massive selectable" data-tag="#viajes" style="--size:2rem">#viajes</span>
+              <span class="hashtag massive selectable" data-tag="#europe" style="--size:1.9rem">#europe</span>
+              <span class="hashtag massive selectable" data-tag="#wanderlust" style="--size:1.8rem">#wanderlust</span>
+              <span class="hashtag massive selectable" data-tag="#travelphotography" style="--size:1.7rem">#travelphotography</span>
+              <span class="hashtag massive selectable" data-tag="#vacation" style="--size:1.6rem">#vacation</span>
+            </div>
+          </div>
+          <!-- High -->
+          <div class="hashtag-tier">
+            <div class="tier-label">🚀 Alto Volumen (10–50M) — Balance alcance/engagement</div>
+            <div class="hashtag-cloud" id="tier-high">
+              <span class="hashtag high selectable" data-tag="#eurotrip" style="--size:1.5rem">#eurotrip</span>
+              <span class="hashtag high selectable" data-tag="#viajar" style="--size:1.4rem">#viajar</span>
+              <span class="hashtag high selectable" data-tag="#italy" style="--size:1.4rem">#italy</span>
+              <span class="hashtag high selectable" data-tag="#italia" style="--size:1.3rem">#italia</span>
+              <span class="hashtag high selectable" data-tag="#paris" style="--size:1.3rem">#paris</span>
+              <span class="hashtag high selectable" data-tag="#travelgram" style="--size:1.2rem">#travelgram</span>
+              <span class="hashtag high selectable" data-tag="#exploreeurope" style="--size:1.2rem">#exploreeurope</span>
+              <span class="hashtag high selectable" data-tag="#instatravel" style="--size:1.1rem">#instatravel</span>
+              <span class="hashtag high selectable" data-tag="#rome" style="--size:1.1rem">#rome</span>
+            </div>
+          </div>
+          <!-- Mid – Nicho -->
+          <div class="hashtag-tier">
+            <div class="tier-label">💡 Nicho Alto (1–10M) — Máxima relevancia y engagement</div>
+            <div class="hashtag-cloud" id="tier-mid">
+              <span class="hashtag mid selectable" data-tag="#agenciadeviajes">#agenciadeviajes</span>
+              <span class="hashtag mid selectable" data-tag="#viajesaeuropa">#viajesaeuropa</span>
+              <span class="hashtag mid selectable" data-tag="#tipsdeviaje">#tipsdeviaje</span>
+              <span class="hashtag mid selectable" data-tag="#viajesenpareja">#viajesenpareja</span>
+              <span class="hashtag mid selectable" data-tag="#destinoseuropeos">#destinoseuropeos</span>
+              <span class="hashtag mid selectable" data-tag="#viajesfamiliares">#viajesfamiliares</span>
+              <span class="hashtag mid selectable" data-tag="#experienciaeuropa">#experienciaeuropa</span>
+              <span class="hashtag mid selectable" data-tag="#viajandopormexicoyelmundo">#viajandopormundo</span>
+              <span class="hashtag mid selectable" data-tag="#paqueteseuropa">#paqueteseuropa</span>
+              <span class="hashtag mid selectable" data-tag="#toureuropa">#toureuropa</span>
+            </div>
+          </div>
+          <!-- Low – Micro nicho -->
+          <div class="hashtag-tier">
+            <div class="tier-label">🎯 Micro Nicho (&lt;1M) — Alta conversión, audiencia cualificada</div>
+            <div class="hashtag-cloud" id="tier-low">
+              <span class="hashtag low selectable" data-tag="#agenciadeviajeslatam">#agenciadeviajeslatam</span>
+              <span class="hashtag low selectable" data-tag="#viajesaeuropalatam">#viajesaeuropalatam</span>
+              <span class="hashtag low selectable" data-tag="#consejosviajeeuropa">#consejosviajeeuropa</span>
+              <span class="hashtag low selectable" data-tag="#paquetesdeviajeseuropa">#paquetesdeviajeseuropa</span>
+              <span class="hashtag low selectable" data-tag="#italiaparalatinos">#italiaparalatinos</span>
+              <span class="hashtag low selectable" data-tag="#viajaaItalia">#viajaaItalia</span>
+              <span class="hashtag low selectable" data-tag="#latinoseneuropa">#latinoseneuropa</span>
+              <span class="hashtag low selectable" data-tag="#europadesdelatam">#europadesdelatam</span>
+              <span class="hashtag low selectable" data-tag="#visaeuropeaparalatinos">#visaeuropeaparalatinos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis Table -->
+        <div class="table-card" style="margin-top:2rem">
+          <h3>📊 Análisis por Plataforma — Top Hashtags con Mayor ROI</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Hashtag</th>
+                  <th>Plataforma</th>
+                  <th>Volumen</th>
+                  <th>Engagement</th>
+                  <th>Tendencia</th>
+                  <th>Recomendación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>#viajesaeuropa</td><td>🎵 TikTok</td><td>8.4M vistas</td><td>6.2%</td><td class="up">▲ Subiendo</td><td><span class="badge-use">Siempre</span></td></tr>
+                <tr><td>#eurotrip</td><td>📸 Instagram</td><td>34M posts</td><td>3.8%</td><td class="stable">→ Estable</td><td><span class="badge-use">Siempre</span></td></tr>
+                <tr><td>#agenciadeviajeslatam</td><td>🎵 TikTok</td><td>2.1M</td><td>8.9%</td><td class="up">▲ Auge</td><td><span class="badge-use">Siempre</span></td></tr>
+                <tr><td>#italytravel</td><td>📸 Instagram</td><td>22M posts</td><td>4.5%</td><td class="stable">→ Estable</td><td><span class="badge-consider">Considerar</span></td></tr>
+                <tr><td>#consejosviajeeuropa</td><td>🎵 TikTok</td><td>1.2M</td><td>11.3%</td><td class="up">▲ Emergente</td><td><span class="badge-priority">Prioridad</span></td></tr>
+                <tr><td>#paquetesdeviajeseuropa</td><td>🎵 TikTok</td><td>890K</td><td>13.7%</td><td class="up">▲ Emergente</td><td><span class="badge-priority">Prioridad</span></td></tr>
+                <tr><td>#italiaparalatinos</td><td>🎵 TikTok</td><td>680K</td><td>14.2%</td><td class="up">▲ Elevado</td><td><span class="badge-priority">Prioridad</span></td></tr>
+                <tr><td>#latinoseneuropa</td><td>📸 Instagram</td><td>920K</td><td>7.1%</td><td class="up">▲ Subiendo</td><td><span class="badge-use">Siempre</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: DEMAND MAP
+      =================================================== -->
+      <section id="section-demand" class="section">
+        <div class="section-header">
+          <h1>🗺️ Mapa de Demanda · LATAM → Europa</h1>
+          <p class="section-desc">Haz clic en un país de origen para ver sus rutas y destinos principales</p>
+        </div>
+
+        <!-- Map + controls -->
+        <div class="map-wrapper">
+          <div class="map-controls">
+            <div class="map-filter-label">Filtrar por origen:</div>
+            <div class="map-filter-btns" id="mapFilterBtns">
+              <button class="map-btn active" data-country="all">Todos</button>
+              <button class="map-btn" data-country="México">🇲🇽 México</button>
+              <button class="map-btn" data-country="Colombia">🇨🇴 Colombia</button>
+              <button class="map-btn" data-country="Argentina">🇦🇷 Argentina</button>
+              <button class="map-btn" data-country="Chile">🇨🇱 Chile</button>
+              <button class="map-btn" data-country="Perú">🇵🇪 Perú</button>
+              <button class="map-btn" data-country="Brasil">🇧🇷 Brasil</button>
+            </div>
+          </div>
+          <div id="travelMap" style="height:440px; border-radius:12px; overflow:hidden;"></div>
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-dot origin"></span> Origen LATAM</div>
+            <div class="legend-item"><span class="legend-dot destination"></span> Destino Europa</div>
+            <div class="legend-item"><span class="legend-line"></span> Ruta activa</div>
+          </div>
+        </div>
+
+        <!-- Dynamic table -->
+        <div class="dynamic-table-card" id="dynamicTableCard">
+          <div class="dtable-header">
+            <h3 id="dtable-title">📊 Todos los Orígenes — Rutas y Demanda</h3>
+            <span class="dtable-period">Mar 2026</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="dynamicDemandTable">
+              <thead>
+                <tr>
+                  <th>Destino Europa</th>
+                  <th>Búsquedas/mes</th>
+                  <th>% del total</th>
+                  <th>vs. Mar 2025</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="dynamicDemandBody">
+                <tr><td>🇮🇹 Italia</td><td>1.48M</td><td>28.4%</td><td class="up">+31%</td><td><span class="status-badge consolidated">Top destino</span></td></tr>
+                <tr><td>🇫🇷 Francia</td><td>1.15M</td><td>22.1%</td><td class="up">+19%</td><td><span class="status-badge consolidated">Estable alto</span></td></tr>
+                <tr><td>🇪🇸 España</td><td>1.01M</td><td>19.4%</td><td class="up">+15%</td><td><span class="status-badge growing">Creciendo</span></td></tr>
+                <tr><td>🇬🇷 Grecia</td><td>770K</td><td>14.8%</td><td class="up">+67%</td><td><span class="status-badge rising">En Auge</span></td></tr>
+                <tr><td>🇵🇹 Portugal</td><td>700K</td><td>13.4%</td><td class="up">+20%</td><td><span class="status-badge growing">Creciendo</span></td></tr>
+                <tr><td>🇩🇪 Alemania</td><td>540K</td><td>10.4%</td><td class="stable">+10%</td><td><span class="status-badge stable">Estable</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row" style="margin-top:1.5rem">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Top Países Origen (LATAM)</h3>
+              <span class="chart-badge">Vol. búsquedas × variación YoY</span>
+            </div>
+            <canvas id="originCountriesChart" height="240"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Destinos Buscados vs. Visitados</h3>
+              <span class="chart-badge">Intención vs. Acción real</span>
+            </div>
+            <canvas id="intentVsActionChart" height="240"></canvas>
+          </div>
+        </div>
+
+        <!-- Intent vs Action Insight -->
+        <div class="insight-box gap-insight">
+          <div class="gap-header">
+            <div class="gap-icon">🔍</div>
+            <h3>Insight Clave: Brecha entre Intención y Acción Real</h3>
+          </div>
+          <div class="gap-grid">
+            <div class="gap-item positive">
+              <div class="gap-label">España</div>
+              <div class="gap-stat">Buscada: 19% · Visitada: 24%</div>
+              <div class="gap-arrow">✅ Convierte bien</div>
+            </div>
+            <div class="gap-item warning">
+              <div class="gap-label">Grecia</div>
+              <div class="gap-stat">Buscada: 15% · Visitada: 9%</div>
+              <div class="gap-arrow">⚠️ Alta intención, baja acción → OPORTUNIDAD</div>
+            </div>
+            <div class="gap-item warning">
+              <div class="gap-label">Albania</div>
+              <div class="gap-stat">Buscada: 6% · Visitada: 2%</div>
+              <div class="gap-arrow">⚠️ Interés pero sin paquetes disponibles → NICHO</div>
+            </div>
+            <div class="gap-item positive">
+              <div class="gap-label">Italia</div>
+              <div class="gap-stat">Buscada: 28% · Visitada: 31%</div>
+              <div class="gap-arrow">✅ Supera expectativa · Mercado maduro</div>
+            </div>
+          </div>
+          <div class="gap-conclusion">💡 <strong>Conclusión:</strong> Grecia y Albania tienen alta intención de viaje pero baja tasa de acción. Quien ofrezca paquetes accesibles y contenido que reduzca la fricción (<em>"¿cómo ir a Grecia desde LATAM?"</em>) capturará una demanda insatisfecha masiva.</div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: COMPETITORS
+      =================================================== -->
+      <section id="section-competitors" class="section">
+        <div class="section-header">
+          <h1>🥇 Competidores · Nicho LATAM→Europa</h1>
+          <p class="section-desc">Métricas comparadas por red social y matrices de posicionamiento estratégico</p>
+        </div>
+
+        <!-- Competitor Cards -->
+        <div class="competitor-grid">
+          <div class="competitor-card top">
+            <div class="comp-rank">#1</div>
+            <div class="comp-header">
+              <div class="comp-avatar" style="background: linear-gradient(135deg,#6366f1,#8b5cf6)">EU</div>
+              <div class="comp-info">
+                <div class="comp-name">EuroViajes Premium</div>
+                <div class="comp-origin">🇦🇷 Argentina → Europa</div>
+              </div>
+              <div class="comp-score">92<span>/100</span></div>
+            </div>
+            <div class="comp-platform-metrics">
+              <div class="cpm-row">
+                <span class="cpm-plat tiktok">🎵 TikTok</span>
+                <span class="cpm-val">287K seg.</span>
+                <span class="cpm-eng">7.4% eng</span>
+                <span class="cpm-freq">14/sem</span>
+              </div>
+              <div class="cpm-row">
+                <span class="cpm-plat instagram">📸 Instagram</span>
+                <span class="cpm-val">156K seg.</span>
+                <span class="cpm-eng">5.2% eng</span>
+                <span class="cpm-freq">8/sem</span>
+              </div>
+            </div>
+            <div class="comp-strengths">
+              <div class="strength-tag">💰 Price reveal</div>
+              <div class="strength-tag">🎬 UGC fuerte</div>
+              <div class="strength-tag">✨ Storytelling</div>
+            </div>
+            <div class="comp-strategy"><strong>Estrategia:</strong> Videos "¿Cuánto cuesta ir a Europa desde Argentina?" con precios detallados. Genera debate y 4x compartidos. Formato #1 del nicho.</div>
+            <div class="comp-weakness">⚡ <strong>Debilidad:</strong> No tiene presencia "en vivo desde Europa". Tu ventaja directa.</div>
+          </div>
+
+          <div class="competitor-card">
+            <div class="comp-rank">#2</div>
+            <div class="comp-header">
+              <div class="comp-avatar" style="background: linear-gradient(135deg,#f59e0b,#ef4444)">VE</div>
+              <div class="comp-info">
+                <div class="comp-name">Viajes Europa MX</div>
+                <div class="comp-origin">🇲🇽 México → Europa</div>
+              </div>
+              <div class="comp-score">87<span>/100</span></div>
+            </div>
+            <div class="comp-platform-metrics">
+              <div class="cpm-row">
+                <span class="cpm-plat tiktok">🎵 TikTok</span>
+                <span class="cpm-val">412K seg.</span>
+                <span class="cpm-eng">9.1% eng</span>
+                <span class="cpm-freq">21/sem</span>
+              </div>
+              <div class="cpm-row">
+                <span class="cpm-plat instagram">📸 Instagram</span>
+                <span class="cpm-val">98K seg.</span>
+                <span class="cpm-eng">3.8% eng</span>
+                <span class="cpm-freq">10/sem</span>
+              </div>
+            </div>
+            <div class="comp-strengths">
+              <div class="strength-tag">🔥 Alta frecuencia</div>
+              <div class="strength-tag">🎵 Trending audio</div>
+              <div class="strength-tag">📍 Behind scenes</div>
+            </div>
+            <div class="comp-strategy"><strong>Estrategia:</strong> Publicación masiva (21 posts/sem) aprovechando cada trending audio de TikTok. Menor calidad pero altísima frecuencia.</div>
+            <div class="comp-weakness">⚡ <strong>Debilidad:</strong> Contenido de baja calidad visual. Instagram débil (bajo engagement).</div>
+          </div>
+
+          <div class="competitor-card">
+            <div class="comp-rank">#3</div>
+            <div class="comp-header">
+              <div class="comp-avatar" style="background: linear-gradient(135deg,#10b981,#059669)">TE</div>
+              <div class="comp-info">
+                <div class="comp-name">Tu Europa Travel</div>
+                <div class="comp-origin">🇨🇴 Colombia → Europa</div>
+              </div>
+              <div class="comp-score">81<span>/100</span></div>
+            </div>
+            <div class="comp-platform-metrics">
+              <div class="cpm-row">
+                <span class="cpm-plat tiktok">🎵 TikTok</span>
+                <span class="cpm-val">198K seg.</span>
+                <span class="cpm-eng">6.8% eng</span>
+                <span class="cpm-freq">10/sem</span>
+              </div>
+              <div class="cpm-row">
+                <span class="cpm-plat instagram">📸 Instagram</span>
+                <span class="cpm-val">134K seg.</span>
+                <span class="cpm-eng">6.1% eng</span>
+                <span class="cpm-freq">7/sem</span>
+              </div>
+            </div>
+            <div class="comp-strengths">
+              <div class="strength-tag">🏆 Calidad visual</div>
+              <div class="strength-tag">📖 Educativo</div>
+              <div class="strength-tag">🤝 Comunidad</div>
+            </div>
+            <div class="comp-strategy"><strong>Estrategia:</strong> Contenido educativo de alta calidad. Carruseles en IG con guías completas. Menor volumen pero alta fidelización.</div>
+            <div class="comp-weakness">⚡ <strong>Debilidad:</strong> Baja frecuencia en TikTok. No tiene los trending audios.</div>
+          </div>
+
+          <div class="competitor-card rising-comp">
+            <div class="comp-rank">⚠️ Directo</div>
+            <div class="comp-header">
+              <div class="comp-avatar" style="background: linear-gradient(135deg,#06b6d4,#3b82f6)">ITA</div>
+              <div class="comp-info">
+                <div class="comp-name">ItaliaParaLatinos</div>
+                <div class="comp-origin">🇮🇹 Italia → LATAM (igual que tú)</div>
+              </div>
+              <div class="comp-score">74<span>/100</span></div>
+            </div>
+            <div class="comp-platform-metrics">
+              <div class="cpm-row">
+                <span class="cpm-plat tiktok">🎵 TikTok</span>
+                <span class="cpm-val">89K seg.</span>
+                <span class="cpm-eng">11.2% eng</span>
+                <span class="cpm-freq">7/sem</span>
+              </div>
+              <div class="cpm-row">
+                <span class="cpm-plat instagram">📸 Instagram</span>
+                <span class="cpm-val">67K seg.</span>
+                <span class="cpm-eng">8.4% eng</span>
+                <span class="cpm-freq">5/sem</span>
+              </div>
+            </div>
+            <div class="comp-strengths">
+              <div class="strength-tag">📍 Basados en Italia</div>
+              <div class="strength-tag">🔑 Diferenciador único</div>
+              <div class="strength-tag">⬆️ En crecimiento</div>
+            </div>
+            <div class="comp-strategy"><strong>Estrategia:</strong> Igual que tú. Su mayor ventaja: contenido "en vivo desde Italia". Engagement 11.2% — el más alto del nicho.</div>
+            <div class="comp-weakness">⚡ <strong>Debilidad:</strong> Baja frecuencia (7/sem). Nichos geográficos no explotados (Colombia, Chile).</div>
+          </div>
+        </div>
+
+        <!-- Platform Comparison Matrix -->
+        <h2 class="subsection-title">📊 Matrices Comparativas por Plataforma</h2>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Matriz General — Posicionamiento</h3>
+            </div>
+            <canvas id="competitorMatrix" height="300"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>TikTok vs. Instagram · Todos los Competidores</h3>
+            </div>
+            <canvas id="platformCompChart" height="300"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🎯</span>
+              <span><strong>Decisión:</strong> Explotas tu ventaja única (estar en Italia) y tu engagement superior. Aumenta frecuencia en TikTok de 5 a 10+ posts/semana para escalar alcance.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- My advantage box -->
+        <div class="advantage-box">
+          <div class="advantage-icon">🌟</div>
+          <div class="advantage-content">
+            <h3>Tu Ventaja Competitiva Única — Inimitable</h3>
+            <p>Estar basado en Italia es tu <strong>diferenciador más poderoso</strong>. Ninguna agencia LATAM puede replicar el conocimiento local real. Explota esto: "Yo vivo aquí, conozco cada rincón, organizo tu viaje como lo haría un local".</p>
+            <div class="advantage-tactics">
+              <div class="adv-tactic">📍 "En vivo desde Roma"</div>
+              <div class="adv-tactic">🍕 Tips locales secretos</div>
+              <div class="adv-tactic">🤌 Solo para locales</div>
+              <div class="adv-tactic">🗣️ Español + Italiano</div>
+              <div class="adv-tactic">🔑 Insider access</div>
+              <div class="adv-tactic">🎬 Contenido en vivo</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: STRATEGIES
+      =================================================== -->
+      <section id="section-strategies" class="section">
+        <div class="section-header">
+          <h1>💡 Estrategias · Mercado LATAM→Europa</h1>
+          <p class="section-desc">Tácticas de contenido, precio y storytelling más efectivas en el nicho · Con análisis de impacto</p>
+        </div>
+
+        <div class="strategy-matrix">
+          <div class="strat-block content">
+            <div class="strat-icon">🎬</div>
+            <h3>Estrategia de Contenido</h3>
+            <div class="strat-items">
+              <div class="strat-item"><div class="strat-name">Day-in-life en Europa</div><div class="strat-perf">🔥 Máximo impacto</div></div>
+              <div class="strat-item"><div class="strat-name">Proceso de reserva transparente</div><div class="strat-perf">✅ Alta conversión</div></div>
+              <div class="strat-item"><div class="strat-name">Comparativa low-cost vs. agencia</div><div class="strat-perf">💬 Viral frecuente</div></div>
+              <div class="strat-item"><div class="strat-name">Q&A "¿Cuánto cuesta ir a...?"</div><div class="strat-perf">📈 Tráfico orgánico</div></div>
+              <div class="strat-item"><div class="strat-name">Errores de viajero primerizo</div><div class="strat-perf">👁️ Alta retención</div></div>
+            </div>
+            <div class="gain-box">
+              <div class="gain-label">👉 ¿Qué gano con esto?</div>
+              <div class="gain-text">Posicionamiento como <strong>referente de autoridad</strong> en el nicho. Tráfico orgánico cualificado sin gasto en publicidad. Cada video educativo es un imán de clientes con alta intención de compra.</div>
+            </div>
+          </div>
+
+          <div class="strat-block pricing">
+            <div class="strat-icon">💰</div>
+            <h3>Estrategia de Precios</h3>
+            <div class="strat-items">
+              <div class="strat-item"><div class="strat-name">Paquetes "Todo incluido Europa"</div><div class="strat-perf">$2,800–$4,500</div></div>
+              <div class="strat-item"><div class="strat-name">Cuotas sin interés (tarjeta)</div><div class="strat-perf">🏆 Top tactic LATAM</div></div>
+              <div class="strat-item"><div class="strat-name">Early bird (anticipo 60 días)</div><div class="strat-perf">📊 +27% cierre</div></div>
+              <div class="strat-item"><div class="strat-name">Precio ancla + descuento visual</div><div class="strat-perf">🧠 Psicología precio</div></div>
+              <div class="strat-item"><div class="strat-name">Bundle: Visa + Vuelo + Hotel</div><div class="strat-perf">✈️ Diferenciador</div></div>
+            </div>
+            <div class="gain-box">
+              <div class="gain-label">👉 ¿Qué gano con esto?</div>
+              <div class="gain-text">Las cuotas sin interés <strong>eliminan la barrera #1 de compra</strong> del cliente LATAM. El early bird genera caja anticipada y reduce el riesgo operativo. Los bundles aumentan el ticket promedio 35%.</div>
+            </div>
+          </div>
+
+          <div class="strat-block storytelling">
+            <div class="strat-icon">📖</div>
+            <h3>Storytelling Efectivo</h3>
+            <div class="strat-items">
+              <div class="strat-item"><div class="strat-name">"El primer viaje que cambió mi vida"</div><div class="strat-perf">❤️ Máximo emocional</div></div>
+              <div class="strat-item"><div class="strat-name">Testimonios de clientes en video</div><div class="strat-perf">🤝 Confianza radical</div></div>
+              <div class="strat-item"><div class="strat-name">Transformación: sueño → realidad</div><div class="strat-perf">🎯 TOFU poderoso</div></div>
+              <div class="strat-item"><div class="strat-name">Behind de cámara de la agencia</div><div class="strat-perf">🏢 Humanización</div></div>
+              <div class="strat-item"><div class="strat-name">"Vivir en Italia y organizar tu viaje"</div><div class="strat-perf">🇮🇹 Tu ventaja única</div></div>
+            </div>
+            <div class="gain-box">
+              <div class="gain-label">👉 ¿Qué gano con esto?</div>
+              <div class="gain-text">El storytelling emocional <strong>acorta el ciclo de decisión</strong> de 6 meses a 4 semanas. Los testimonios son el cierre de venta más efectivo: convierten curiosos en compradores con un costo de adquisición $0.</div>
+            </div>
+          </div>
+
+          <div class="strat-block distribution">
+            <div class="strat-icon">📡</div>
+            <h3>Estrategia de Distribución</h3>
+            <div class="strat-items">
+              <div class="strat-item"><div class="strat-name">TikTok: 5–7 videos/semana</div><div class="strat-perf">🚀 Canal principal</div></div>
+              <div class="strat-item"><div class="strat-name">Instagram: 3–4 posts + Stories diarios</div><div class="strat-perf">💼 Canal conversión</div></div>
+              <div class="strat-item"><div class="strat-name">WhatsApp: Lista de broadcast</div><div class="strat-perf">📲 Canal cierre</div></div>
+              <div class="strat-item"><div class="strat-name">YouTube Shorts: Repurposing TikTok</div><div class="strat-perf">🔁 Amplificación gratis</div></div>
+              <div class="strat-item"><div class="strat-name">Colaboraciones con creadores LATAM</div><div class="strat-perf">🤝 Audiencia nueva</div></div>
+            </div>
+            <div class="gain-box">
+              <div class="gain-label">👉 ¿Qué gano con esto?</div>
+              <div class="gain-text">La estrategia multi-canal <strong>multiplica el alcance sin multiplicar trabajo</strong>: un video en TikTok se reutiliza en Reels, YouTube Shorts y Stories. WhatsApp tiene tasa de apertura del 98% — ideal para ofertas y cierres.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: NICHE HASHTAGS
+      =================================================== -->
+      <section id="section-niche-hashtags" class="section">
+        <div class="section-header">
+          <h1>🔖 Hashtags Nicho · LATAM → Europa</h1>
+          <p class="section-desc">Hashtags específicos de alta conversión para tu segmento. Selecciona y copia.</p>
+        </div>
+
+        <!-- Niche picker bar -->
+        <div class="hashtag-picker-bar">
+          <div class="picker-selected">
+            <span class="picker-label">Set nicho:</span>
+            <div class="picker-tags" id="nichePickerTags"><em>Selecciona hashtags de nicho →</em></div>
+          </div>
+          <div class="picker-actions">
+            <span class="picker-count"><span id="nichePickerCount">0</span>/20</span>
+            <button class="btn-copy" id="copyNicheBtn" disabled>📋 Copiar</button>
+            <button class="btn-clear" id="clearNicheBtn">✕ Limpiar</button>
+          </div>
+        </div>
+
+        <div class="hashtag-strategy-grid">
+          <div class="hs-category">
+            <div class="hs-cat-header">🇮🇹 Específicos Italia</div>
+            <div class="hs-tags" data-picker="niche">
+              <div class="hs-tag selectable-niche" data-tag="#italiaparalatinos" data-level="high">#italiaparalatinos <span>↑ Hot · 680K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#viajaaItalia" data-level="high">#viajaaItalia <span>4.2M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#italiadesdecero" data-level="med">#italiadesdecero <span>890K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#italiaconpresupuesto" data-level="med">#italiaconpresupuesto <span>640K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#italiadesdelatam" data-level="low">#italiadesdelatam <span>210K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#vivirenitalia" data-level="low">#vivirenitalia <span>180K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#secretosenRoma" data-level="low">#secretosdeRoma <span>145K</span></div>
+            </div>
+          </div>
+          <div class="hs-category">
+            <div class="hs-cat-header">🌍 Generalistas Nicho</div>
+            <div class="hs-tags" data-picker="niche">
+              <div class="hs-tag selectable-niche" data-tag="#agenciadeviajeslatam" data-level="high">#agenciadeviajeslatam <span>↑ Hot · 2.1M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#viajesaeuropa" data-level="high">#viajesaeuropa <span>8.4M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#paqueteseuropa" data-level="high">#paqueteseuropa <span>3.1M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#viajelatam" data-level="med">#viajelatam <span>1.8M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#latinoseneuropa" data-level="med">#latinoseneuropa <span>920K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#europaporprimeraves" data-level="low">#europaporprimera vez <span>380K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#tipsviajerolatam" data-level="low">#tipsviajerolatam <span>290K</span></div>
+            </div>
+          </div>
+          <div class="hs-category">
+            <div class="hs-cat-header">🎯 Alta Conversión</div>
+            <div class="hs-tags" data-picker="niche">
+              <div class="hs-tag selectable-niche" data-tag="#consejosviajeeuropa" data-level="high">#consejosviajeeuropa <span>↑ Emerg. · 1.2M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#paquetesdeviajeseuropa" data-level="high">#paquetesdeviajeseuropa <span>↑ Emerg.</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#viajaraeuropabarato" data-level="med">#viajaraeuropabarato <span>2.3M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#agenciaviajesitalia" data-level="med">#agenciaviajesitalia <span>340K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#visaeuropeaparalatinos" data-level="low">#visaeuropeaparalatinos <span>290K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#europasinagencia" data-level="low">#europasinagencia <span>vs tu propuesta</span></div>
+            </div>
+          </div>
+          <div class="hs-category">
+            <div class="hs-cat-header">🌍 Por País LATAM</div>
+            <div class="hs-tags" data-picker="niche">
+              <div class="hs-tag selectable-niche" data-tag="#viajaraeuropadesdemexico" data-level="high">#viajesdesdemex <span>↑ Vol. alto</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#europadesdeargentina" data-level="high">#europadesdeargentina <span>1.4M</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#europadesdecolombia" data-level="med">#europadesdecolombia <span>780K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#viajesdesdeChile" data-level="med">#viajesdesdeChile <span>620K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#europadesdeperu" data-level="low">#europadesdeperu <span>340K</span></div>
+              <div class="hs-tag selectable-niche" data-tag="#europadesdevenezuela" data-level="low">#europadesdevenezuela <span>290K</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Set -->
+        <div class="recommendation-box">
+          <h3>🎯 Set Óptimo Recomendado por Tipo de Contenido</h3>
+          <div class="rec-tabs">
+            <button class="rec-tab active" data-rec="tiktok">🎵 Para TikTok</button>
+            <button class="rec-tab" data-rec="instagram">📸 Para Instagram</button>
+            <button class="rec-tab" data-rec="reels">🎬 Para Reels</button>
+          </div>
+          <div class="rec-content active" id="rec-tiktok">
+            <p class="rec-desc">15–20 hashtags | Combina 3 masivos + 7 intermedios + 5 nicho</p>
+            <div class="rec-set">
+              <div class="rec-group"><div class="rec-label">Masivos (×3)</div><div class="rec-tags"><code>#travel</code><code>#viajes</code><code>#europe</code></div></div>
+              <div class="rec-group"><div class="rec-label">Intermedios (×7)</div><div class="rec-tags"><code>#viajesaeuropa</code><code>#eurotrip</code><code>#agenciadeviajeslatam</code><code>#italytravel</code><code>#paqueteseuropa</code><code>#latinoseneuropa</code><code>#tipsdeviaje</code></div></div>
+              <div class="rec-group"><div class="rec-label">Nicho (×5)</div><div class="rec-tags"><code>#italiaparalatinos</code><code>#viajaaItalia</code><code>#agenciaviajesitalia</code><code>#consejosviajeeuropa</code><code>#paquetesdeviajeseuropa</code></div></div>
+            </div>
+          </div>
+          <div class="rec-content" id="rec-instagram">
+            <p class="rec-desc">5–8 hashtags | Prioriza relevancia sobre volumen en Instagram</p>
+            <div class="rec-set">
+              <div class="rec-group"><div class="rec-label">Set Instagram (×8)</div><div class="rec-tags"><code>#eurotrip</code><code>#italytravel</code><code>#viajesaeuropa</code><code>#latinoseneuropa</code><code>#paqueteseuropa</code><code>#agenciadeviajes</code><code>#destinoseuropeos</code><code>#rome</code></div></div>
+            </div>
+          </div>
+          <div class="rec-content" id="rec-reels">
+            <p class="rec-desc">8–12 hashtags | Mezcla ambas plataformas para maximizar distribución</p>
+            <div class="rec-set">
+              <div class="rec-group"><div class="rec-label">Set Reels (×10)</div><div class="rec-tags"><code>#travel</code><code>#viajes</code><code>#eurotrip</code><code>#viajesaeuropa</code><code>#italiaparalatinos</code><code>#agenciadeviajeslatam</code><code>#latinoseneuropa</code><code>#paqueteseuropa</code><code>#tipsdeviaje</code><code>#viajaaItalia</code></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: HOOKS
+      =================================================== -->
+      <section id="section-hooks" class="section">
+        <div class="section-header">
+          <h1>🎣 Ganchos & Hooks · Los Primeros 3 Segundos</h1>
+          <p class="section-desc">El hook es el primer texto/imagen/frase de tu video. Define si el usuario sigue viendo o se va. Hooks validados con mayor retención para el nicho LATAM→Europa.</p>
+        </div>
+
+        <!-- What is a hook -->
+        <div class="concept-box">
+          <div class="concept-icon">🧠</div>
+          <div class="concept-content">
+            <div class="concept-title">¿Qué es un Hook? <span class="concept-en">(Gancho en español)</span></div>
+            <div class="concept-desc">Es la primera frase, imagen o texto de tu video que aparece en los primeros <strong>1–3 segundos</strong>. Determina si el usuario se queda o sigue scrolleando. Un buen hook puede multiplicar ×5 las visualizaciones del mismo contenido. El 80% del éxito de un video está en el hook.</div>
+            <div class="concept-types">
+              <div class="ctype"><strong>Hook Visual:</strong> La primera imagen impactante</div>
+              <div class="ctype"><strong>Hook de Texto:</strong> El caption o texto en pantalla</div>
+              <div class="ctype"><strong>Hook de Voz:</strong> Las primeras palabras que dices</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hooks-grid">
+          <div class="hook-category">
+            <div class="hook-cat-title">💸 Hooks de Precio/Valor</div>
+            <div class="hook-cat-explain">Funcionan porque activan la curiosidad sobre el costo y eliminan el mito de que Europa es inalcanzable.</div>
+            <div class="hook-cards">
+              <div class="hook-card">
+                <div class="hook-text">"¿Sabías que puedes ir a Italia por menos de $2,500 dólares TODO incluido?"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Rompe la creencia de que Europa es cara. Genera inmediata curiosidad y comentarios de "¿cómo?"</div>
+                <div class="hook-metrics"><span>👁️ Retención: 87%</span><span>💬 Alto engagement</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"El vuelo más barato a Europa desde [tu país] y casi nadie lo conoce"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> "Nadie lo conoce" crea exclusividad y FOMO de información. Altísima tasa de guardado.</div>
+                <div class="hook-metrics"><span>🔁 Shares: +++</span><span>💾 Saves: Muy alto</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"Gasté menos en Italia que en mis vacaciones en Cancún — aquí los números"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Comparativa relatable para latinoamericanos. Genera debate y reacciones inmediatas.</div>
+                <div class="hook-metrics"><span>❤️ Likes: Muy alto</span><span>💬 Debate activo</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hook-category">
+            <div class="hook-cat-title">😱 Hooks de FOMO/Urgencia</div>
+            <div class="hook-cat-explain">FOMO = Fear Of Missing Out (Miedo a perderse algo). Activan la urgencia de actuar ahora antes de que sea tarde o se agoten cupos.</div>
+            <div class="hook-cards">
+              <div class="hook-card hot">
+                <div class="hook-badge">🔥 Mejor performer</div>
+                <div class="hook-text">"Si no viajas a Europa ESTE AÑO vas a arrepentirte — y te explico exactamente por qué"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> El arrepentimiento es la emoción más poderosa para mover a la acción. El "exactamente" aumenta la credibilidad.</div>
+                <div class="hook-metrics"><span>👁️ Retención: 91%</span><span>📤 Shares: Muy alto</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"Últimos 3 lugares para el tour de Italia en octubre 🚨"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Escasez real + urgencia de tiempo. Dispara mensajes directos y consultas de precio inmediatas.</div>
+                <div class="hook-metrics"><span>📲 DMs: Máximo</span><span>⏰ Urgencia: Alta</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"Los vuelos a Europa van a subir 40% en 3 meses — reserva ahora"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Información de utilidad real que hace al usuario sentir que actuando ahora ahorra dinero. Altísimo guardado.</div>
+                <div class="hook-metrics"><span>💾 Saves: Muy alto</span><span>📤 Compartidos: Alto</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hook-category">
+            <div class="hook-cat-title">🧠 Hooks Educativos/Autoridad</div>
+            <div class="hook-cat-explain">Posicionan tu expertise. El usuario sigue viendo porque espera aprender algo valioso que no encontrará en otro lugar. Construyen comunidad de alto valor.</div>
+            <div class="hook-cards">
+              <div class="hook-card hot">
+                <div class="hook-badge">🏆 Top nicho LATAM→EU</div>
+                <div class="hook-text">"Vivo en Italia y te doy los secretos que ninguna agencia latinoamericana te va a contar"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Usa tu diferenciador único (vivir en Italia) + el "secreto" genera expectativa. Inimitable por competidores basados en LATAM.</div>
+                <div class="hook-metrics"><span>👁️ Retención: 94%</span><span>🔖 Follows: Muy alto</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"5 errores que cometen los latinoamericanos en Europa por primera vez"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> El formato de lista + el miedo al error hace que el usuario vea completo para evitar esos errores. Genera comentarios de identificación.</div>
+                <div class="hook-metrics"><span>💬 Debate activo</span><span>📤 Muy compartido</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"La diferencia entre ir a Europa con agencia vs. sin agencia (la verdad honesta)"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> La palabra "honesta/verdad" genera confianza. El debate entre opciones mantiene engagement hasta el final del video.</div>
+                <div class="hook-metrics"><span>💾 Saves: Muy alto</span><span>👁️ Completion: 88%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hook-category">
+            <div class="hook-cat-title">❤️ Hooks Emocionales</div>
+            <div class="hook-cat-explain">Apelan al sueño de vida del cliente latino. El viaje a Europa es un logro aspiracional profundo. Estos hooks activan la emoción antes de la razón.</div>
+            <div class="hook-cards">
+              <div class="hook-card">
+                <div class="hook-text">"Si siempre soñaste con ver el Coliseo, este video es para ti 🇮🇹"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Invita directamente al soñador. La persona se siente identificada y continúa viendo porque siente que el contenido es "para mí".</div>
+                <div class="hook-metrics"><span>❤️ Likes: Muy alto</span><span>💬 Emocional: Alto</span></div>
+              </div>
+              <div class="hook-card hot">
+                <div class="hook-badge">💫 Viral reciente</div>
+                <div class="hook-text">"Mi primera vez en Italia me hizo llorar — y quiero que tú también lo vivas"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> El llanto + invitación personal. Genera empatía instantánea y deseo de vivir la misma experiencia. Alto shares porque "quiero que mis amigos vean esto".</div>
+                <div class="hook-metrics"><span>📤 Shares: Muy alto</span><span>👁️ Retención: 89%</span></div>
+              </div>
+              <div class="hook-card">
+                <div class="hook-text">"¿Cuándo fue la última vez que te regalaste una experiencia que cambie tu vida?"</div>
+                <div class="hook-why">💡 <em>Por qué funciona:</em> Pregunta reflexiva que genera culpa positiva. Perfecto para público 35-50 años en etapa de logro personal. Activa el deseo de "merezco esto".</div>
+                <div class="hook-metrics"><span>💬 Reflexión: Alta</span><span>❤️ Conexión profunda</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           SECTION: CLIENT PROFILE
+      =================================================== -->
+      <section id="section-client-profile" class="section">
+        <div class="section-header">
+          <h1>👤 Perfil del Cliente Latino Viajero</h1>
+          <p class="section-desc">Psicografía, comportamiento y journey de compra del viajero latinoamericano hacia Europa · Mar 2026</p>
+        </div>
+
+        <!-- Hero Profile -->
+        <div class="profile-hero">
+          <div class="profile-avatar-big">🧳</div>
+          <div class="profile-summary">
+            <h2>El Viajero Latino Aspiracional 2026</h2>
+            <p>Mujer u hombre, 28–45 años, clase media-alta, con ingresos familiares superiores a $2,000 USD/mes. Sueña con Europa desde hace años, actúa por impulso emocional pero necesita seguridad y confianza para comprar. Investiga 6–8 meses antes de decidir.</p>
+          </div>
+          <div class="profile-quick-stats">
+            <div class="qstat"><div class="qstat-val">68%</div><div class="qstat-lbl">Son mujeres</div></div>
+            <div class="qstat"><div class="qstat-val">28–45</div><div class="qstat-lbl">Edad principal</div></div>
+            <div class="qstat"><div class="qstat-val">6–8 m.</div><div class="qstat-lbl">Ciclo decisión</div></div>
+            <div class="qstat"><div class="qstat-val">71%</div><div class="qstat-lbl">Descubren RRSS</div></div>
+            <div class="qstat"><div class="qstat-val">$4,100</div><div class="qstat-lbl">Ticket promedio</div></div>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-card">
+            <div class="profile-card-title">🎯 Destinos Favoritos</div>
+            <div class="profile-items">
+              <div class="pitem"><span class="prank">1</span><span class="pname">Italia (Roma, Venecia, Toscana)</span><div class="pbar" style="--w:92%"></div></div>
+              <div class="pitem"><span class="prank">2</span><span class="pname">Francia (París, Riviera)</span><div class="pbar" style="--w:78%"></div></div>
+              <div class="pitem"><span class="prank">3</span><span class="pname">España (Madrid, Barcelona)</span><div class="pbar" style="--w:71%"></div></div>
+              <div class="pitem"><span class="prank">4</span><span class="pname">Grecia (Santorini, Atenas)</span><div class="pbar" style="--w:64%"></div></div>
+              <div class="pitem"><span class="prank">5</span><span class="pname">Portugal (Lisboa, Oporto)</span><div class="pbar" style="--w:58%"></div></div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-title">📅 Temporadas Preferidas</div>
+            <div class="profile-items">
+              <div class="pitem"><span class="prank season">JUL</span><span class="pname">Verano Europeo (Jul–Ago)</span><div class="pbar summer" style="--w:89%"></div></div>
+              <div class="pitem"><span class="prank season">DIC</span><span class="pname">Navidad en Europa (Dic–Ene)</span><div class="pbar winter" style="--w:76%"></div></div>
+              <div class="pitem"><span class="prank season">MAR</span><span class="pname">Primavera (Mar–May)</span><div class="pbar spring" style="--w:68%"></div></div>
+              <div class="pitem"><span class="prank season">OCT</span><span class="pname">Otoño (Oct–Nov) · Emergente 🆕</span><div class="pbar fall" style="--w:54%"></div></div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-title">💰 Presupuesto & Estilo de Viaje</div>
+            <div class="budget-segments">
+              <div class="budget-seg" style="--pct:18%">
+                <div class="budget-bar eco"></div>
+                <div class="budget-label">Budget<br/><strong>$1.5k–$2.5k</strong><br/>18%</div>
+              </div>
+              <div class="budget-seg" style="--pct:54%">
+                <div class="budget-bar mid"></div>
+                <div class="budget-label">Mid<br/><strong>$2.5k–$4.5k</strong><br/>54% ← Tu foco</div>
+              </div>
+              <div class="budget-seg" style="--pct:28%">
+                <div class="budget-bar premium"></div>
+                <div class="budget-label">Premium<br/><strong>$4.5k+</strong><br/>28%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-title">🧠 Motivaciones de Compra</div>
+            <div class="motivation-list">
+              <div class="mot-item"><div class="mot-emoji">🏆</div><div class="mot-text"><strong>Logro personal</strong> — "Por fin cumplí mi sueño de Europa"</div></div>
+              <div class="mot-item"><div class="mot-emoji">📸</div><div class="mot-text"><strong>Status social</strong> — Compartir el viaje en redes</div></div>
+              <div class="mot-item"><div class="mot-emoji">👨‍👩‍👧</div><div class="mot-text"><strong>Familia</strong> — Experiencia memorable conjunta</div></div>
+              <div class="mot-item"><div class="mot-emoji">💑</div><div class="mot-text"><strong>Romance</strong> — Luna de miel o aniversario</div></div>
+              <div class="mot-item"><div class="mot-emoji">🎓</div><div class="mot-text"><strong>Cultural/Educativo</strong> — Historia y arte europeo</div></div>
+              <div class="mot-item"><div class="mot-emoji">🌿</div><div class="mot-text"><strong>Desconexión</strong> — Escape del estrés diario</div></div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-title">📱 Comportamiento Digital</div>
+            <div class="digital-behavior">
+              <div class="db-item"><span class="db-platform">🎵 TikTok</span><span class="db-desc">Descubrimiento e inspiración. Ve videos de viajes 4.2×/día promedio.</span></div>
+              <div class="db-item"><span class="db-platform">📸 Instagram</span><span class="db-desc">Investigación de destinos y seguimiento de agencias. Guarda posts para referencia.</span></div>
+              <div class="db-item"><span class="db-platform">💬 WhatsApp</span><span class="db-desc">Canal de compra. Prefiere hablar por WhatsApp antes que comprar en web.</span></div>
+              <div class="db-item"><span class="db-platform">🔍 Google</span><span class="db-desc">Búsquedas de precio y comparativas tras ver contenido en redes.</span></div>
+              <div class="db-item"><span class="db-platform">▶️ YouTube</span><span class="db-desc">Vlogs de viaje para planificación detallada de itinerarios (fase consideración).</span></div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-title">💳 Barriers to Purchase</div>
+            <div class="barriers-list">
+              <div class="barrier-item high"><span class="barrier-level">🔴 Alta</span><span>PRECIO PERCIBIDO — "Es muy caro para mí"</span><span class="barrier-fix">→ Contenido de precio real + cuotas</span></div>
+              <div class="barrier-item high"><span class="barrier-level">🔴 Alta</span><span>VISA — "El proceso es muy difícil"</span><span class="barrier-fix">→ Contenido educativo de visa paso a paso</span></div>
+              <div class="barrier-item med"><span class="barrier-level">🟡 Media</span><span>CONFIANZA — "¿Y si me estafan?"</span><span class="barrier-fix">→ Testimonios en video + transparencia</span></div>
+              <div class="barrier-item med"><span class="barrier-level">🟡 Media</span><span>IDIOMA — "No hablo inglés/italiano"</span><span class="barrier-fix">→ Paquetes con guías en español</span></div>
+              <div class="barrier-item low"><span class="barrier-level">🟢 Baja</span><span>SEGURIDAD — "¿Europa es segura?"</span><span class="barrier-fix">→ Contenido de tranquilidad y tips</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buyer Journey -->
+        <div class="profile-card full-width">
+          <div class="profile-card-title">🛒 Journey de Compra del Viajero Latino Europa 2026</div>
+          <div class="journey-steps">
+            <div class="journey-step">
+              <div class="js-num">1</div>
+              <div class="js-phase">Inspiración</div>
+              <div class="js-channel">TikTok / Instagram Reels</div>
+              <div class="js-time">6–8 meses antes</div>
+              <div class="js-action">Ve video viral → guarda/sigue cuenta → empieza a soñar</div>
+              <div class="js-kpi">✅ KPI: Follows + Saves</div>
+            </div>
+            <div class="journey-arrow">→</div>
+            <div class="journey-step">
+              <div class="js-num">2</div>
+              <div class="js-phase">Consideración</div>
+              <div class="js-channel">YouTube / Google / WhatsApp grupos</div>
+              <div class="js-time">3–4 meses antes</div>
+              <div class="js-action">Busca precios, compara agencias, pregunta en grupos de FB</div>
+              <div class="js-kpi">✅ KPI: Comentarios + DMs</div>
+            </div>
+            <div class="journey-arrow">→</div>
+            <div class="journey-step">
+              <div class="js-num">3</div>
+              <div class="js-phase">Decisión</div>
+              <div class="js-channel">Instagram / WhatsApp directo</div>
+              <div class="js-time">1–2 meses antes</div>
+              <div class="js-action">Revisa testimonios → envía DM → pide cotización</div>
+              <div class="js-kpi">✅ KPI: Consultas + Calls</div>
+            </div>
+            <div class="journey-arrow">→</div>
+            <div class="journey-step">
+              <div class="js-num">4</div>
+              <div class="js-phase">Compra</div>
+              <div class="js-channel">WhatsApp / Llamada / Transfer</div>
+              <div class="js-time">Inmediato al decidir</div>
+              <div class="js-action">Paga enganche → proceso visa → cuenta regresiva emocionada</div>
+              <div class="js-kpi">💰 KPI: Conversión + Ticket</div>
+            </div>
+            <div class="journey-arrow">→</div>
+            <div class="journey-step">
+              <div class="js-num">5</div>
+              <div class="js-phase">Post-viaje</div>
+              <div class="js-channel">TikTok / Instagram / WhatsApp</div>
+              <div class="js-time">Al regresar</div>
+              <div class="js-action">Publica experiencia → referidos naturales → repite en 18 meses</div>
+              <div class="js-kpi">🔁 KPI: Reviews + Referidos</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /sections-container -->
+  </main>
+
+  <!-- Update Modal -->
+  <div class="update-modal" id="updateModal" style="display:none">
+    <div class="update-modal-inner">
+      <div class="update-spinner"></div>
+      <div class="update-text">Actualizando datos al último mes cerrado...</div>
+      <div class="update-detail" id="updateDetail">Conectando con fuentes de datos...</div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

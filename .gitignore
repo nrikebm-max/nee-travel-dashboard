@@ -1,0 +1,13 @@
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Local testing
+node_modules/
+package-lock.json
+.netlify/
+.vercel/
