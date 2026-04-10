@@ -198,49 +198,65 @@
 
             <div class="kpi-mini-grid">
               <div class="kpi-mini-card">
-                <span class="kpi-mini-val" id="p-followers">--</span>
+                <span class="kpi-mini-val" id="p-followers">0</span>
                 <span class="kpi-mini-lbl">Seguidores</span>
               </div>
               <div class="kpi-mini-card">
-                <span class="kpi-mini-val" id="p-engagement">--</span>
+                <span class="kpi-mini-val" id="p-engagement">0%</span>
                 <span class="kpi-mini-lbl">Engagement</span>
               </div>
               <div class="kpi-mini-card">
-                <span class="kpi-mini-val" id="p-growth">--</span>
+                <span class="kpi-mini-val" id="p-growth">0 posts</span>
                 <span class="kpi-mini-lbl">Contenido</span>
               </div>
               <div class="kpi-mini-card">
-                <span class="kpi-mini-val" id="p-frequency">--</span>
+                <span class="kpi-mini-val" id="p-frequency">0</span>
                 <span class="kpi-mini-lbl">Likes</span>
               </div>
             </div>
 
-            <!-- Deep Metrics -->
+            <!-- Nuevas Métricas Avanzadas -->
             <div class="deep-metrics-grid">
               <div class="metric-box">
-                <div class="m-label">Performance vs Nicho</div>
-                <div class="m-meter">
-                  <div class="m-bar" style="width: 78%"></div>
-                </div>
-                <div class="m-msg">Superior al 78% de agencias</div>
+                <div class="m-label">VTA (Video Throughput) <span class="m-info-tip" title="Tiempo de retención en video">ⓘ</span></div>
+                <div class="m-meter"><div class="m-bar" id="p-vta" style="width: 0%"></div></div>
+                <div class="m-msg">Retención superior al promedio del nicho</div>
               </div>
               <div class="metric-box">
-                <div class="m-label">Sentimiento de Comentarios</div>
-                <div class="m-meter">
-                  <div class="m-bar pos" style="width: 92%"></div>
-                </div>
-                <div class="m-msg">92% de reseñas positivas</div>
+                <div class="m-label">Conversion Intent Rate <span class="m-info-tip" title="% de intención de compra">ⓘ</span></div>
+                <div class="m-meter"><div class="m-bar pos" id="p-intent" style="width: 0%"></div></div>
+                <div class="m-msg">Alto volumen de consultas por DM</div>
+              </div>
+              <div class="metric-box">
+                <div class="m-label">Shareability Score</div>
+                <div class="m-meter"><div class="m-bar" id="p-share" style="width: 0%"></div></div>
+                <div class="m-msg">Potencial viral: Elevado</div>
+              </div>
+              <div class="metric-box">
+                <div class="m-label">Audience Retention</div>
+                <div class="m-meter"><div class="m-bar pos" id="p-retention" style="width: 0%"></div></div>
+                <div class="m-msg">Fidelidad de marca: Estable</div>
               </div>
             </div>
 
-            <div class="charts-row">
-              <div class="chart-card">
-                <div class="chart-header"><h3>Crecimiento Local</h3></div>
-                <canvas id="profileGrowthChart" height="180"></canvas>
-              </div>
-              <div class="chart-card">
-                <div class="chart-header"><h3>Benchmarking</h3></div>
-                <canvas id="profileCompChart" height="180"></canvas>
+            <div class="profile-deep-charts">
+              <div class="charts-row">
+                <div class="chart-card">
+                  <h3>Crecimiento Local vs Global</h3>
+                  <canvas id="profileGrowthChart"></canvas>
+                  <div class="chart-insight">
+                    <span class="insight-icon">💡</span>
+                    <p>Tu crecimiento supera la media del mercado LATAM en un 12% este trimestre.</p>
+                  </div>
+                </div>
+                <div class="chart-card">
+                  <h3>Benchmarking de Competencia</h3>
+                  <canvas id="profileBenchChart"></canvas>
+                  <div class="chart-insight">
+                    <span class="insight-icon">🎯</span>
+                    <p>Lideras en engagement rate frente a agencias de tamaño similar en Italia.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -489,12 +505,20 @@
               <h3>Cruce Subsegmentos Digitales</h3>
             </div>
             <canvas id="travelCrossChart" height="180"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">📊</span>
+              <span>La correlación entre TikTok e Instagram en el nicho "Interrail" es del 89%. Si un video es viral en TikTok, tiene un 70% de éxito garantizado en Reels.</span>
+            </div>
           </div>
           <div class="chart-card">
             <div class="chart-header">
               <h3>Evolución por Plataforma</h3>
             </div>
             <canvas id="travelEvolutionChart" height="180"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">📈</span>
+              <span>TikTok ha superado a Instagram en volumen de descubrimiento turístico por primera vez este trimestre.</span>
+            </div>
           </div>
         </div>
 
@@ -686,6 +710,10 @@
               <span class="chart-badge">Mar 2026 vs 2025</span>
             </div>
             <canvas id="destinationsChart" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🏛️</span>
+              <span>Italia mantiene el liderazgo absoluto con un crecimiento sostenido del 31% YoY. Albania es la oportunidad oculta del año.</span>
+            </div>
           </div>
           <div class="chart-card">
             <div class="chart-header">
@@ -693,6 +721,10 @@
               <span class="chart-badge">Índice mensual</span>
             </div>
             <canvas id="seasonalityChart" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">📅</span>
+              <span>Estamos entrando en el pico de planificación. Las búsquedas de marzo tienden a convertirse en depósitos de reserva durante abril.</span>
+            </div>
           </div>
         </div>
 
@@ -1043,6 +1075,10 @@
               <span class="chart-badge">Vol. búsquedas × variación YoY</span>
             </div>
             <canvas id="originCountriesChart" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🌎</span>
+              <span>México y Colombia lideran la intención de viaje. Argentina muestra resiliencia a pesar del contexto económico.</span>
+            </div>
           </div>
           <div class="chart-card">
             <div class="chart-header">
@@ -1050,6 +1086,10 @@
               <span class="chart-badge">Intención vs. Acción real</span>
             </div>
             <canvas id="intentVsActionChart" height="240"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">⚖️</span>
+              <span>Grecia tiene la mayor brecha de "deseo vs. compra". Paquetes simplificados podrían capturar este mercado.</span>
+            </div>
           </div>
         </div>
 
@@ -1237,6 +1277,10 @@
               <h3>Matriz General — Posicionamiento</h3>
             </div>
             <canvas id="competitorMatrix" height="300"></canvas>
+            <div class="chart-insight">
+              <span class="insight-icon-sm">🏁</span>
+              <span>Te encuentras en el cuadrante de "Especialista de Nicho". Tu oportunidad es escalar hacia "Líder de Mercado" aumentando la frecuencia de publicación.</span>
+            </div>
           </div>
           <div class="chart-card">
             <div class="chart-header">

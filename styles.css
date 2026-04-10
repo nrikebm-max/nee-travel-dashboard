@@ -1400,22 +1400,52 @@ body {
 .update-text   { font-weight: 700; font-size: 1rem; }
 .update-detail { font-size: .84rem; color: var(--text2); }
 
-/* === TOAST ================================================= */
-.toast {
-  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-  background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: var(--radius); padding: 12px 20px;
-  font-size: .88rem; font-weight: 600; color: var(--text);
-  box-shadow: var(--shadow);
-  opacity: 0; pointer-events: none;
-  transform: translateY(10px);
-  transition: opacity .3s, transform .3s;
+.deep-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 25px;
 }
-.toast.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
-/* === MAP TOOLTIP =========================================== */
-.map-tooltip { background: var(--surface2) !important; color: var(--text) !important; border: 1px solid var(--border) !important; border-radius: 8px !important; font-family: 'Inter', sans-serif !important; font-size: .82rem !important; }
-.leaflet-container { background: var(--bg) !important; }
+.chart-card {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  transition: transform .3s, border-color .3s;
+}
+
+.chart-insight {
+  margin-top: 15px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  border-left: 3px solid var(--primary);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.chart-insight .insight-icon, .chart-insight .insight-icon-sm {
+  font-size: 1.1rem;
+  filter: drop-shadow(0 0 5px var(--primary));
+}
+.chart-insight p, .chart-insight span {
+  font-size: 0.82rem;
+  color: var(--text2);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.m-info-tip {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  cursor: help;
+  margin-left: 5px;
+}
 
 /* === RESPONSIVE ============================================ */
 @media (max-width: 1100px) {
